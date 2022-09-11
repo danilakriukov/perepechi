@@ -4,6 +4,14 @@ from datetime import datetime
 import pickle
 
 
+class Member:
+	def __init__(self, name):
+		self.name = name
+	def access(self):
+		result = True
+		return result
+
+
 app = Flask(__name__)
 
 
@@ -14,7 +22,12 @@ def begin():
 
 @app.route('/main')
 def main():
-	return render_template("main.html")
+	'''class Member:
+		def access (self, name):
+			result = True
+			return result'''
+	member = Member.access('danila')
+	return render_template("main.html",result=member)
 
 
 if __name__ == "__main__":
