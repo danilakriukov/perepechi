@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.1.4/pixi.min.js" integrity="sha512-TS/czpKZw0ZexH4BtLiVpBo+XJkwmRgwPdt4AxFNyulVvJ9qb+qsyZASYEN9i8uv14XLlLgp882wb0Z6jwNQfA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js" integrity="sha512-QTnb9BQkG4fBYIt9JGvYmxPpd6TBeKp6lsUrtiVQsrJ9sb33Bn9s0wMQO9qVBFbPX3xHRAsBHvXlcsrnJjExjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+//const eventSource = new EventSource("/stream");
+// Create a PixiJS application
+const app = new PIXI.Application({width: 800, height: 450,backgroundColor: 0xAAAAAA});
+
+// Add the PixiJS application's canvas to the HTML document
+document.body.appendChild(app.view);
+
+// Define an array of file paths to the images for the Capguy sprite animation
+const capguyFrames = [
+    "https://bucket-photos-blog-pelgoos.s3.eu-west-3.amazonaws.com/ck1.png",
+    "https://bucket-photos-blog-pelgoos.s3.eu-west-3.amazonaws.com/ck2.png"
+];
+
+
+var y = 0;
+
+// load sprite sheet image + data file, call setup() if completed
+PIXI.Assets.load([
+    ...capguyFrames,
+]).then((textures) => {
+
+    // create an animated sprite
+    const frames = capguyFrames.map((frame) => textures[frame]);
+    const animatedCapguy = new PIXI.AnimatedSprite(frames);
+    
+    // configure + start animation:
+    animatedCapguy.animationSpeed = 1 / 20;                   // 6 fps
+    animatedCapguy.position.set(y, 20);
+
+    let padik = PIXI.Sprite.from('static/img/wall.jpg');
+    
+	var scaleX = 0.5;
+	var scaleY = 0.5;    
+	padik.scale.set(4, scaleY);
+	var positionX = 100;
+	var positionY = 100;
+	//padik.x = positionX / scaleX;
+	//padik.y = positionY / scaleY;
+	padik.position.set(0,-100);
+    app.stage.addChild(padik);
+
+    let biden = PIXI.Sprite.from('static/img/biden.png');
+    biden.position.set(300,-30);
+    app.stage.addChild(biden);
+
+    // add it to the stage and render!
+    app.stage.addChild(animatedCapguy);
+    var action = 1;
+
+    var i = 1;                  //  set your counter to 1
+    function myLoop() {         //  create a loop function
+      setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+        animatedCapguy.position.set(y+=5, 20);   //  your code here
+      //i++;                    //  increment the counter
+      if (i > 0) {           //  if the counter < 10, call the loop function
+        myLoop();             //  ..  again which will trigger another 
+      }                       //  ..  setTimeout()
+      }, 100)
+    }
+    //myLoop();                   //  start the loop*/
+
+    //window.onload = function(e){
+    //  
+    //  console.log(animatedCapguy.position);
+      /*while (action == 1) {
+        setTimeout(function () {
+          animatedCapguy.position.set(y+=5, 20);
+          console.log(animatedCapguy.position);
+        }, 500);
+      }*/
+    //}
+        //console.log(i);
+        //var i = 0;
+        /*    function myLoop() {         //  create a loop function
+              setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+                animatedCapguy.position.set(y+=5, 20);   //  your code here
+                  if (i == 1) {           //  if the counter < 10, call the loop function
+                    console.log(i);
+                    myLoop();             //  ..  again which will trigger another 
+                  } else if (i == 0){
+                    console.log(i);
+                  }                       //  ..  setTimeout()
+              }, 100)
+            }*/
+          //myLoop();                   //  start the loop*/
+
+var Action;
+
+
+function repeatTask(){
+ console.log(Action); 
+ if (Action == 'GoesVPravo'){
+  console.log('Action: '+Action);
+  animatedCapguy.position.set(y+=5, 20);
+  setTimeout(repeatTask,100);// repeat after1 second(1000 milliseconds)
+ } else {
+  console.log("Action is stop");
+  animatedCapguy.position.set(y, 20);
+ }
+}
+
+
+    function sse() {
+      var source = new EventSource('/stream');
+      source.onmessage = function(e) {
+        if (e.data == 'GoesVPravo') {
+          //animatedCapguy.position.set(y+=5, 20);
+          Action = e.data;  
+          //myLoop();
+          //repeatTask();
+          console.log('e.data: '+typeof(e.data));
+          console.log('Action: '+typeof(Action));
+          repeatTask();
+        }
+        else {
+          Action = e.data;
+          //animatedCapguy.position.set(y, 20);
+          console.log('Action: '+e.data);
+          //repeatTask();
+        }
+      };
+    }
+    sse();
+
+    /*let i=0;
+
+    function myFunction(){
+    // The function to execute with a delay
+      setTimeout(function(){
+        console.log(i);
+      },1000);
+    // Keep calling the function every second until i reaches10
+      while(i<10){
+        setTimeout(myFunction,1000);// Call the function again in a second
+        break;// Exit the loop after the first iteration
+      }
+    }
+    myFunction();*/
+
+    /*var source = new EventSource('/stream');
+    function sse() {
+      source.addEventListener("online", function(e) {
+        console.log(e.data);
+      }, true)
+    }
+    sse();*/
+
+    /*eventSource.addEventListener("online", function(e) {
+      data = JSON.parse(e.data)
+      console.log(e.data)
+      if (data.color == 1) {
+        animatedCapguy.position.set(y+=5, 20);
+      } else if (data.color == 2) {
+        animatedCapguy.position.set(y-=5, 20);
+      } else if (data.color == 3) {
+        animatedCapguy.play();
+      } else if (data.color == 4) {
+          axios.post(`/stop`);
+        	let brushstroke = PIXI.Sprite.from('static/img/brushstroke.png');
+			    brushstroke.rotation = 1.5;
+			    var scaleX = 0.5;
+			    var scaleY = 0.5;    
+			    brushstroke.scale.set(scaleX, scaleY);
+			    var positionX = 100;
+			    var positionY = 100;
+			    brushstroke.x = positionX / scaleX;
+			    brushstroke.y = positionY / scaleY;
+          brushstroke.position.set(350+y,0);
+          console.log(brushstroke.position);
+          app.stage.addChild(brushstroke);
+          animatedCapguy.stop();
+          app.stage.addChild(animatedCapguy);
+      }
+    }, true)*/
+});
+</script>
+</body>
+</html>
